@@ -1,0 +1,16 @@
+{
+  "name": "deployment_service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@vercel/sdk": "^1.18.7",
+    "dotenv": "^17.2.3",
+    "epxress": "^0.0.1-security"
+  }
+}
