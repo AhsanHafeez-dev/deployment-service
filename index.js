@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.json())
 const vercel = new Vercel({
-  bearerToken: process.env.VERCEL_TOKEN,
+  bearerToken: process.env.V_TOKEN,
 });
 
 async function setupEnvVar(projectId) {
