@@ -183,48 +183,54 @@ const ENV_VARIABLES = [
     value:
       process.env.DATABASE_URL ||
       "postgresql://user:password@localhost:5432/mydb",
+    type: "encrypted",
   },
   {
     key: "GITHUB_ID",
     value: process.env.GITHUB_ID || "your_github_id",
+    type: "plain",
   },
   {
     key: "GITHUB_SECRET",
     value: process.env.GITHUB_SECRET || "your_github_secret",
-    type: "secret",
+    type: "encrypted",
   },
   {
     key: "GOOGLE_CLIENT_ID",
     value: process.env.GOOGLE_CLIENT_ID || "your_google_client_id",
+    type: "plain",
   },
   {
     key: "GOOGLE_CLIENT_SECRET",
     value: process.env.GOOGLE_CLIENT_SECRET || "your_google_client_secret",
-    type: "secret",
+    type: "encrypted",
   },
   {
     key: "NEXTAUTH_SECRET",
     value: process.env.NEXTAUTH_SECRET || "your_nextauth_secret",
-    type: "secret",
+    type: "encrypted",
   },
   {
     key: "NEXTAUTH_URL",
     value: process.env.NEXTAUTH_URL || "https://yourdomain.com",
+    type: "plain",
   },
   {
     key: "STRIPE_SECRET_KEY",
     value: process.env.STRIPE_SECRET_KEY || "sk_test_your_stripe_secret",
-    type: "secret",
+    type: "encrypted",
   },
   {
     key: "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
     value:
       process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ||
       "pk_test_your_stripe_public",
+    type: "plain",
   },
   {
     key: "MY_API_URL",
     value: "https://api.vercel.com",
+    type: "plain",
   },
 ];
 
@@ -239,7 +245,7 @@ async function setupEnvVars(projectId) {
           key: envVar.key,
           value: envVar.value,
           target: ["production", "preview", "development"],
-          type: envVar.type || "plain", // Use "secret" for sensitive values, "plain" for public
+          type: envVar.type, // Use "encrypted" for sensitive values, "plain" for public
         },
       });
       console.log(`✅ Added: ${envVar.key}`);
@@ -361,14 +367,14 @@ app.get("/api/health", (req, res) => {
 });
 
 // Root endpoint
-// app.get("/", (req, res) => {
-//   res.json({
-//     message: "Vercel Deployment API",
-//     endpoints: {
-//       deploy: "POST /api/deploy",
-//       health: "GET /api/health",
-//     },
-//   });
-// });
+app.get("/", (req, res) => {
+  res.json({
+    message: "Vercel Deployment API",
+    endpoints: {
+      deploy: "POST /api/deploy",
+      health: "GET /api/health",
+    },
+  });
+});
 
 export default app;
