@@ -158,6 +158,235 @@
 // //   });
 // // }
 
+// import { Vercel } from "@vercel/sdk";
+// import bodyParser from "body-parser";
+// import express from "express";
+// import dotenv from "dotenv";
+// dotenv.config();
+
+// function sleep(ms) {
+//   return new Promise((resolve) => setTimeout(resolve, ms));
+// }
+
+// const app = express();
+// app.use(express.json());
+// app.use(bodyParser.json());
+
+// const vercel = new Vercel({
+//   bearerToken: process.env.V_TOKEN,
+// });
+
+// // Hardcoded environment variables
+// const ENV_VARIABLES = [
+//   {
+//     key: "DATABASE_URL",
+//     value:
+//       process.env.DATABASE_URL ||
+//       "postgresql://user:password@localhost:5432/mydb",
+//     type: "encrypted",
+//   },
+//   {
+//     key: "GITHUB_ID",
+//     value: process.env.GITHUB_ID || "your_github_id",
+//     type: "plain",
+//   },
+//   {
+//     key: "GITHUB_SECRET",
+//     value: process.env.GITHUB_SECRET || "your_github_secret",
+//     type: "encrypted",
+//   },
+//   {
+//     key: "GOOGLE_CLIENT_ID",
+//     value: process.env.GOOGLE_CLIENT_ID || "your_google_client_id",
+//     type: "plain",
+//   },
+//   {
+//     key: "GOOGLE_CLIENT_SECRET",
+//     value: process.env.GOOGLE_CLIENT_SECRET || "your_google_client_secret",
+//     type: "encrypted",
+//   },
+//   {
+//     key: "NEXTAUTH_SECRET",
+//     value: process.env.NEXTAUTH_SECRET || "your_nextauth_secret",
+//     type: "encrypted",
+//   },
+//   {
+//     key: "NEXTAUTH_URL",
+//     value: process.env.NEXTAUTH_URL || "https://yourdomain.com",
+//     type: "plain",
+//   },
+//   {
+//     key: "STRIPE_SECRET_KEY",
+//     value: process.env.STRIPE_SECRET_KEY || "sk_test_your_stripe_secret",
+//     type: "encrypted",
+//   },
+//   {
+//     key: "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+//     value:
+//       process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ||
+//       "pk_test_your_stripe_public",
+//     type: "plain",
+//   },
+//   {
+//     key: "MY_API_URL",
+//     value: "https://api.vercel.com",
+//     type: "plain",
+//   },
+// ];
+
+// async function setupEnvVars(projectId) {
+//   console.log("🔧 Setting up environment variables...");
+
+//   try {
+//     for (const envVar of ENV_VARIABLES) {
+//       await vercel.projects.createProjectEnv({
+//         idOrName: projectId,
+//         requestBody: {
+//           key: envVar.key,
+//           value: envVar.value,
+//           target: ["production", "preview", "development"],
+//           type: envVar.type, // Use "encrypted" for sensitive values, "plain" for public
+//         },
+//       });
+//       console.log(`✅ Added: ${envVar.key}`);
+//     }
+//     console.log("✅ All environment variables set successfully");
+//   } catch (err) {
+//     console.error("❌ Failed to set environment variables:", err);
+//     throw err;
+//   }
+// }
+
+// async function createProject(projectName, githubUserName, repositoryName) {
+//   try {
+//     const project = await vercel.projects.createProject({
+//       requestBody: {
+//         name: projectName,
+//         framework: "nextjs",
+//         gitRepository: {
+//           type: "github",
+//           repo: repositoryName,
+//           org: githubUserName,
+//         },
+//         buildCommand: "npm run build",
+//         devCommand: "npm run dev",
+//         outputDirectory: ".next",
+//       },
+//     });
+//     console.log("✅ Project created:", project.id);
+//     return project;
+//   } catch (err) {
+//     console.error("❌ Failed to create project:", err);
+//     throw err;
+//   }
+// }
+
+// async function deploy(userName, projectId, githubUserName, repositoryName) {
+//   const projectName = userName + "-" + projectId;
+//   const project = await createProject(
+//     projectName,
+//     githubUserName,
+//     repositoryName,
+//   );
+
+//   // Set up all environment variables before deployment
+//   await setupEnvVars(project?.id);
+
+//   try {
+//     const deployment = await vercel.deployments.createDeployment({
+//       requestBody: {
+//         name: projectName,
+//         project: project.id,
+//         gitSource: {
+//           type: "github",
+//           repo: repositoryName,
+//           ref: "main",
+//           org: githubUserName,
+//         },
+//         target: "production",
+//       },
+//     });
+
+//     const deploymentUrl = `https://${deployment?.oidcTokenClaims?.project}.vercel.app`;
+//     console.log(`Deployment URL: ${deploymentUrl}`);
+//     console.log(
+//       `Deployment ID: ${deployment.id}, status: ${deployment.status}`,
+//     );
+
+//     return deploymentUrl;
+//   } catch (err) {
+//     console.error("❌ Deployment failed:", err);
+//     throw err;
+//   }
+// }
+
+// // API endpoint
+// app.post("/api/deploy", async (req, res) => {
+//   try {
+//     let { repositoryName, githubUserName, userName } = req.body;
+//     if (!githubUserName && !userName) {
+//       githubUserName = "AhsanHafeez-dev";
+//       userName = "ahsan";
+//     }
+
+//     // Validate input
+//     if (!repositoryName || !githubUserName || !userName) {
+//       return res.status(400).json({
+//         error: "Missing required parameters",
+//         required: ["repositoryName", "githubUserName", "userName"],
+//       });
+//     }
+
+//     const projectId = Date.now();
+//     const deploymentUrl = await deploy(
+//       userName,
+//       projectId,
+//       githubUserName,
+//       repositoryName,
+//     );
+//     await sleep(90000);
+
+//     res.json({
+//       success: true,
+//       deploymentUrl,
+//       projectId,
+//       message: "Deployment initiated successfully",
+//     });
+//   } catch (error) {
+//     console.error("Deployment error:", error);
+//     res.status(500).json({
+//       success: false,
+//       error: error.message || "Deployment failed",
+//     });
+//   }
+// });
+
+// // Health check endpoint
+// app.get("/api/health", (req, res) => {
+//   res.json({ status: "ok", timestamp: new Date().toISOString() });
+// });
+
+// // Root endpoint
+// app.get("/", (req, res) => {
+//   res.json({
+//     message: "Vercel Deployment API",
+//     endpoints: {
+//       deploy: "POST /api/deploy",
+//       health: "GET /api/health",
+//     },
+//   });
+// });
+
+// export default app;
+
+
+
+
+
+
+
+
+
 import { Vercel } from "@vercel/sdk";
 import bodyParser from "body-parser";
 import express from "express";
@@ -257,6 +486,41 @@ async function setupEnvVars(projectId) {
   }
 }
 
+async function updateNextAuthUrl(projectId, deploymentUrl) {
+  console.log("🔄 Updating NEXTAUTH_URL with deployment URL...");
+
+  try {
+    // First, get all environment variables to find the NEXTAUTH_URL env ID
+    const envVars = await vercel.projects.getProjectEnvs({
+      idOrName: projectId,
+    });
+
+    // Find the NEXTAUTH_URL environment variable
+    const nextAuthEnv = envVars.envs?.find((env) => env.key === "NEXTAUTH_URL");
+
+    if (nextAuthEnv) {
+      // Update the existing NEXTAUTH_URL
+      await vercel.projects.editProjectEnv({
+        idOrName: projectId,
+        id: nextAuthEnv.id,
+        requestBody: {
+          value: deploymentUrl,
+          target: ["production", "preview", "development"],
+          type: "plain",
+        },
+      });
+      console.log(`✅ Updated NEXTAUTH_URL to: ${deploymentUrl}`);
+    } else {
+      console.warn(
+        "⚠️ NEXTAUTH_URL not found in project environment variables",
+      );
+    }
+  } catch (err) {
+    console.error("❌ Failed to update NEXTAUTH_URL:", err);
+    throw err;
+  }
+}
+
 async function createProject(projectName, githubUserName, repositoryName) {
   try {
     const project = await vercel.projects.createProject({
@@ -313,7 +577,10 @@ async function deploy(userName, projectId, githubUserName, repositoryName) {
       `Deployment ID: ${deployment.id}, status: ${deployment.status}`,
     );
 
-    return deploymentUrl;
+    // Update NEXTAUTH_URL with the actual deployment URL
+    await updateNextAuthUrl(project.id, deploymentUrl);
+
+    return { deploymentUrl, projectVercelId: project.id };
   } catch (err) {
     console.error("❌ Deployment failed:", err);
     throw err;
@@ -338,7 +605,7 @@ app.post("/api/deploy", async (req, res) => {
     }
 
     const projectId = Date.now();
-    const deploymentUrl = await deploy(
+    const { deploymentUrl, projectVercelId } = await deploy(
       userName,
       projectId,
       githubUserName,
@@ -350,6 +617,7 @@ app.post("/api/deploy", async (req, res) => {
       success: true,
       deploymentUrl,
       projectId,
+      projectVercelId,
       message: "Deployment initiated successfully",
     });
   } catch (error) {
