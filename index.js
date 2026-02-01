@@ -407,26 +407,6 @@ const ENV_VARIABLES = [
     type: "encrypted",
   },
   {
-    key: "GITHUB_ID",
-    value: process.env.GITHUB_ID || "your_github_id",
-    type: "plain",
-  },
-  {
-    key: "GITHUB_SECRET",
-    value: process.env.GITHUB_SECRET || "your_github_secret",
-    type: "encrypted",
-  },
-  {
-    key: "GOOGLE_CLIENT_ID",
-    value: process.env.GOOGLE_CLIENT_ID || "your_google_client_id",
-    type: "plain",
-  },
-  {
-    key: "GOOGLE_CLIENT_SECRET",
-    value: process.env.GOOGLE_CLIENT_SECRET || "your_google_client_secret",
-    type: "encrypted",
-  },
-  {
     key: "NEXTAUTH_SECRET",
     value: process.env.NEXTAUTH_SECRET || "your_nextauth_secret",
     type: "encrypted",
@@ -451,6 +431,53 @@ const ENV_VARIABLES = [
   {
     key: "MY_API_URL",
     value: "https://api.vercel.com",
+    type: "plain",
+  },
+  {
+    key: "EMAIL_FROM",
+    value: process.env.EMAIL_FROM,
+    type: "plain",
+  },
+
+  {
+    key: "EMAIL_SERVER_USER",
+    value: process.env.EMAIL_SERVER_USER,
+    type: "plain",
+  },
+
+  {
+    key: "EMAIL_SERVER_PASSWORD",
+    value: process.env.EMAIL_SERVER_PASSWORD,
+    type: "plain",
+  },
+
+  {
+    key: "CLOUDINARY_CLOUD_NAME",
+    value: process.env.CLOUDINARY_CLOUD_NAME,
+    type: "plain",
+  },
+
+  {
+    key: "CLOUDINARY_API_KEY",
+    value: process.env.CLOUDINARY_API_KEY,
+    type: "plain",
+  },
+
+  {
+    key: "CLOUDINARY_API_SECRET",
+    value: process.env.CLOUDINARY_API_SECRET,
+    type: "plain",
+  },
+
+  {
+    key: "EMAIL_SERVER_HOST",
+    value: process.env.EMAIL_SERVER_HOST,
+    type: "plain",
+  },
+
+  {
+    key: "EMAIL_SERVER_PORT",
+    value: process.env.EMAIL_SERVER_PORT,
     type: "plain",
   },
 ];
@@ -582,12 +609,14 @@ async function deploy(userName, projectId, githubUserName, repositoryName) {
 // API endpoint
 app.post("/api/deploy", async (req, res) => {
   try {
-    let { repositoryName, githubUserName, userName } = req.body;
+    let { repositoryName, githubUserName, userName,database_url } = req.body;
     if (!githubUserName && !userName) {
       githubUserName = "AhsanHafeez-dev";
       userName = "ahsan";
     }
-
+    if (database_url) {
+      ENV_VARIABLES[0].value=database_url
+    }
     // Validate input
     if (!repositoryName || !githubUserName || !userName) {
       return res.status(400).json({
