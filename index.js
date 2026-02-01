@@ -379,14 +379,6 @@
 
 // export default app;
 
-
-
-
-
-
-
-
-
 import { Vercel } from "@vercel/sdk";
 import bodyParser from "body-parser";
 import express from "express";
@@ -491,7 +483,7 @@ async function updateNextAuthUrl(projectId, deploymentUrl) {
 
   try {
     // First, get all environment variables to find the NEXTAUTH_URL env ID
-    const envVars = await vercel.projects.getProjectEnvs({
+    const envVars = await vercel.projects.filterProjectEnvs({
       idOrName: projectId,
     });
 
