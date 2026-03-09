@@ -772,6 +772,8 @@ async function setupEnvVars(projectId) {
   console.log("🔧 Setting up environment variables...");
 
   try {
+    console.log(ENV_VARIABLES);
+    
     for (const envVar of ENV_VARIABLES) {
       await vercel.projects.createProjectEnv({
         idOrName: projectId,
